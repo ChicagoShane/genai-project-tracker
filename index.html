@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Voice-to-Voice AI Assistant — Project Tracker</title>
+<style>
+  :root{
+    --bg:#0f1220; --card:#1a1e33; --card2:#212645; --text:#e8eaf6; --muted:#9aa0c3;
+    --shane:#4fc3f7; --clark:#81c784; --victoria:#ff8a65; --alison:#ce93d8;
+    --accent:#7c6cf0; --done:#39d98a;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif; background:var(--bg); color:var(--text); padding:24px; max-width:1200px; margin:0 auto;}
+  header{text-align:center; margin-bottom:24px;}
+  h1{font-size:1.7rem; margin-bottom:6px;}
+  .sub{color:var(--muted); font-size:.95rem;}
+  .topbar{display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin:18px 0;}
+  .pill{background:var(--card); border:1px solid #2e3560; border-radius:12px; padding:12px 20px; text-align:center;}
+  .pill .big{font-size:1.3rem; font-weight:700;}
+  .pill .lbl{font-size:.75rem; color:var(--muted); text-transform:uppercase; letter-spacing:.5px;}
+  .drive-btn{display:inline-flex; align-items:center; gap:8px; background:var(--accent); color:#fff; text-decoration:none; font-weight:600; padding:13px 24px; border-radius:12px; transition:.2s;}
+  .drive-btn:hover{filter:brightness(1.15); transform:translateY(-1px);}
+  .overall{background:var(--card); border:1px solid #2e3560; border-radius:14px; padding:16px 20px; margin-bottom:22px;}
+  .bar{height:12px; background:#0d1020; border-radius:6px; overflow:hidden; margin-top:8px;}
+  .bar>div{height:100%; background:linear-gradient(90deg,var(--accent),var(--done)); width:0%; transition:width .4s; border-radius:6px;}
+  .bar-label{display:flex; justify-content:space-between; font-size:.85rem; color:var(--muted);}
+  .milestones{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:26px;}
+  .ms{background:var(--card); border:1px solid #2e3560; border-left:4px solid var(--accent); border-radius:10px; padding:12px 14px;}
+  .ms b{display:block; font-size:.9rem;}
+  .ms span{font-size:.78rem; color:var(--muted);}
+  .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(480px,1fr)); gap:18px;}
+  .member{background:var(--card); border:1px solid #2e3560; border-radius:14px; overflow:hidden;}
+  .member-head{padding:16px 18px 12px; border-bottom:1px solid #2e3560;}
+  .member-head h2{font-size:1.15rem; display:flex; align-items:center; gap:10px;}
+  .dot{width:14px; height:14px; border-radius:50%;}
+  .role{color:var(--muted); font-size:.85rem; margin-top:3px;}
+  .pts{font-size:.75rem; color:var(--muted); margin-top:4px; font-style:italic;}
+  .tasks{padding:10px 12px 16px;}
+  .task{display:flex; align-items:flex-start; gap:10px; padding:9px 8px; border-radius:8px; cursor:pointer; transition:.15s; user-select:none;}
+  .task:hover{background:var(--card2);}
+  .task input{margin-top:3px; width:17px; height:17px; accent-color:var(--done); cursor:pointer; flex-shrink:0;}
+  .task .txt{font-size:.9rem; line-height:1.35; flex:1;}
+  .task.done .txt{text-decoration:line-through; color:var(--muted);}
+  .task .chev{color:var(--muted); font-size:.75rem; margin-top:4px; flex-shrink:0; transition:transform .15s;}
+  .task.open .chev{transform:rotate(90deg);}
+  .tag{display:inline-block; font-size:.66rem; font-weight:700; padding:2px 7px; border-radius:6px; margin-left:6px; vertical-align:middle; white-space:nowrap;}
+  .cp1{background:#3d2f5c; color:#c9b6ff;} .cp2{background:#173f4f; color:#7fd8f5;} .fin{background:#4a2f2f; color:#ffb0a0;}
+  .steps{display:none; margin:0 8px 8px 44px; padding:10px 14px; background:#0d1020; border:1px solid #2e3560; border-radius:8px;}
+  .steps.show{display:block;}
+  .steps li{font-size:.82rem; color:var(--muted); line-height:1.5; margin-left:16px; padding:2px 0;}
+  .steps li::marker{color:var(--accent);}
+  .member .bar{margin:0 18px;}
+  .member .bar-label{padding:10px 18px 4px;}
+  footer{text-align:center; color:var(--muted); font-size:.8rem; margin-top:28px;}
+  .reset{background:none; border:1px solid #2e3560; color:var(--muted); padding:6px 14px; border-radius:8px; cursor:pointer; font-size:.78rem; margin-top:8px;}
+  .reset:hover{color:var(--text);}
+  @media(max-width:560px){.grid{grid-template-columns:1fr;} .milestones{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<header>
+  <h1>🎙️ Agentic Voice-to-Voice AI Assistant</h1>
+  <div class="sub">Product Discovery for E-commerce · GenAI II Final Project · Team: Shane, Clark, Victoria &amp; Alison</div>
+  <div class="topbar">
+    <div class="pill"><div class="big" id="countdown">–</div><div class="lbl">Days until Aug 14</div></div>
+    <div class="pill"><div class="big" id="doneCount">0/0</div><div class="lbl">Tasks complete</div></div>
+    <div class="pill"><div class="big" id="syncStatus" style="color:var(--muted)">● connecting…</div><div class="lbl">Team sync</div></div>
+    <a class="drive-btn" href="https://drive.google.com/drive/folders/1l-Hr9PKd9C9-CAlo-6vV8qSM0Fs8DIMh?usp=sharing" target="_blank">📁 Open Team Google Drive</a>
+  </div>
+</header>
+
+<div class="overall">
+  <div class="bar-label"><span>Overall team progress</span><span id="overallPct">0%</span></div>
+  <div class="bar"><div id="overallBar"></div></div>
+</div>
+
+<div class="milestones">
+  <div class="ms"><b>Checkpoint 1 — Week 6 (~Jul 17)</b><span>One-page proposal · ingestion notebook · related work</span></div>
+  <div class="ms"><b>Checkpoint 2 — Week 8 (~Jul 31)</b><span>Architecture diagram · UI wireframe · RAG eval plan · MCP README</span></div>
+  <div class="ms"><b>Final — Aug 14</b><span>Live demo (≤7 min) · repo + README · presentation · prompts/ folder</span></div>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<footer>
+  Click a task's text to expand its step-by-step breakdown; use the checkbox to mark it done. 🎓 = cross-training task (mentor in parentheses).<br>
+  Checkmarks sync live for the whole team (Firebase) — everyone sees the same progress in real time.<br>
+  <button class="reset" onclick="resetAll()">Reset all checkmarks (for everyone!)</button>
+</footer>
+
+<script>
+const MEMBERS = [
+  {
+    id:"shane", name:"Shane", color:"var(--shane)",
+    role:"Agentic RAG, Evaluation & Prompt Disclosure",
+    pts:"Why: SBERT embeddings + ML eval experience (CulturalLens project), data analyst role, prompt engineering writing · Covers: Agentic RAG Quality (22) · Prompt Disclosure (5)",
+    tasks:[
+      {t:"Download Amazon Product Dataset 2020 (Kaggle); curate Household Cleaning slice", p:"cp1", s:[
+        "Create a Kaggle account/API token and download the Amazon Product Dataset 2020",
+        "Explore categories; filter to Household Cleaning (aim for a few thousand products)",
+        "Check field coverage: title, brand, price, rating, features, ingredients",
+        "Save the raw slice to the team Drive folder and document the selection criteria"
+      ]},
+      {t:"Build ingestion notebook: clean data → products.parquet (id, title, brand, category, price, rating, features, ingredients)", p:"cp1", s:[
+        "Load the raw slice in pandas; profile nulls, duplicates, and price outliers",
+        "Clean: strip HTML, dedupe by SKU/title, standardize prices to USD floats",
+        "Map columns to the target schema (id, title, brand, category, price, rating, features, ingredients)",
+        "Write products.parquet; add markdown cells explaining each step (this notebook is a CP1 deliverable)"
+      ]},
+      {t:"Build embedding index (title + features + review snippets) in FAISS/Chroma with metadata", p:"cp2", s:[
+        "Choose an embedding model (e.g., sentence-transformers all-MiniLM or OpenAI embeddings)",
+        "Concatenate title + features + top review snippets into one embed-text per product",
+        "Embed all products and store vectors in FAISS or Chroma",
+        "Attach metadata (brand, price, rating, category, ingredients, doc_id) to each entry; verify with test queries"
+      ]},
+      {t:"Write RAG evaluation plan (Checkpoint 2 deliverable)", p:"cp2", s:[
+        "Draft 15–20 representative test queries (budget limits, materials, eco-claims)",
+        "Define metrics: precision@k, metadata-filter correctness, citation accuracy",
+        "Set pass thresholds and a labeling method (manual relevance judgments)",
+        "Write it up as a 1-page plan and add it to the Drive folder"
+      ]},
+      {t:"Implement hybrid retrieval: vector search + metadata filters (price, brand, rating, category)", p:"fin", s:[
+        "Write a retrieve() function combining vector similarity and metadata filters",
+        "Parse constraints (e.g., price < 15) into filter clauses applied pre- or post-search",
+        "Tune k and score thresholds on your eval queries",
+        "Handle the empty-result case: relax filters and flag it in the response"
+      ]},
+      {t:"Add optional reranker; return doc_id with every result for citations/provenance", p:"fin", s:[
+        "Add a cross-encoder reranker (e.g., ms-marco-MiniLM) over the top-20 candidates",
+        "Compare precision@5 with vs. without reranking on eval queries",
+        "Ensure every returned result carries its doc_id and source fields",
+        "Keep the reranker behind a config flag so it can be toggled off"
+      ]},
+      {t:"🎓 Implement rag.search MCP tool: {sku, title, price, rating, brand?, ingredients?, doc_id} (cross-training, mentor: Clark)", p:"fin", s:[
+        "Read Clark's MCP server scaffold and the MCP tool schema docs (30-min pairing session with Clark)",
+        "Define the rag.search JSON schema: query string + optional filters in, product records out",
+        "Wire the tool handler to call your hybrid retrieve() function",
+        "Register it in the server's tool discovery; test via the MCP inspector; Clark reviews"
+      ]},
+      {t:"🎓 Build agent step log panel showing each node's plan and tool calls (cross-training, mentor: Alison)", p:"fin", s:[
+        "Pair with Alison for a Streamlit basics walkthrough (st.expander, st.container, session_state)",
+        "Define the log event format emitted by the graph (node name, input, plan, tool calls, output)",
+        "Render events as a collapsible timeline in the app sidebar or a dedicated panel",
+        "Test with a full pipeline run; Alison reviews layout and usability"
+      ]},
+      {t:"Create prompts/ folder: all system prompts, router/planner prompts, few-shot examples, prompt→node mapping", p:"fin", s:[
+        "Collect the live prompts from every graph node (router, planner, answerer/critic) with Victoria",
+        "Save each as a separate file in prompts/ with clear names",
+        "Add few-shot examples and the planner rubric used by agents",
+        "Write a README table mapping each prompt file to its node/tool (worth 5 pts — check the rubric wording)"
+      ]},
+      {t:"Write index build script + data preprocessing documentation", p:"fin", s:[
+        "Convert the notebook pipeline into a repeatable build_index.py script",
+        "Add CLI args for data path, model choice, and output location",
+        "Document the preprocessing decisions and how to rebuild from scratch",
+        "Verify a teammate can run it clean on their machine"
+      ]},
+      {t:"Presentation: data, RAG design & retrieval results section", p:"fin", s:[
+        "Prepare 2 slides: data slice + indexing design, and retrieval eval results",
+        "Include one concrete example query with retrieved results and citations",
+        "Rehearse to fit your ~1.5-minute share of the 7-minute demo"
+      ]}
+    ]
+  },
+  {
+    id:"clark", name:"Clark", color:"var(--clark)",
+    role:"MCP Server, Tools & Infrastructure",
+    pts:"Why: Hugging Face MCP certification, Senior Sysadmin @ Red Hat (reliability, caching, logging at 25k-user scale) · Covers: MCP Server (15) · infra portion of Functionality",
+    tasks:[
+      {t:"Set up GitHub repo, project skeleton, .env.example, and swappable LLM config (env-var based)", p:"cp1", s:[
+        "Create the repo with folders: graph/, mcp_server/, ui/, data/, prompts/, docs/",
+        "Add .env.example listing every key (LLM_PROVIDER, LLM_MODEL, API keys, search API)",
+        "Write a config loader that picks the LLM from env vars (OpenAI/Anthropic/Gemini/local)",
+        "Add .gitignore (env files, data, indexes) and invite all teammates as collaborators"
+      ]},
+      {t:"Choose web-search API (Brave/Serper/Bing) and get API key; add to .env.example", p:"cp1", s:[
+        "Compare free tiers: Brave Search API vs. Serper vs. Bing (rate limits, price fields)",
+        "Register and obtain an API key for the chosen provider",
+        "Do a smoke test: query a cleaner product, inspect the JSON response shape",
+        "Document the choice and the key name in .env.example and the README"
+      ]},
+      {t:"Scaffold MCP server with tool discovery: names + JSON schemas; pick transport (stdio or HTTP/SSE)", p:"cp2", s:[
+        "Choose the Python MCP SDK and transport (stdio is simplest for local dev)",
+        "Scaffold the server with two registered tool stubs: web.search and rag.search",
+        "Define JSON schemas for both tools' inputs and outputs",
+        "Verify tool discovery works from a test client (names + schemas returned correctly)"
+      ]},
+      {t:"Write MCP README with tool schemas (Checkpoint 2 deliverable)", p:"cp2", s:[
+        "Document both tool schemas with example requests and responses",
+        "Explain transport choice, how to start the server, and required env vars",
+        "Add a section on caching, rate limits, and logging behavior",
+        "Review against the CP2 requirements and put it in the repo + Drive"
+      ]},
+      {t:"Implement web.search tool: normalized {title, url, snippet, price?, availability?} output", p:"fin", s:[
+        "Wrap the search API call with query construction (product + price terms)",
+        "Parse responses into the normalized shape; extract price/availability where present",
+        "Handle errors: timeouts, quota exhaustion, empty results — return structured errors",
+        "Unit test with recorded (mocked) responses so tests don't burn quota"
+      ]},
+      {t:"🎓 Run retrieval evaluation: precision checks on sample queries, document results (cross-training, mentor: Shane)", p:"fin", s:[
+        "Review Shane's RAG eval plan and metrics together (30-min pairing session)",
+        "Run the eval query set through hybrid retrieval; record top-k results",
+        "Judge relevance per result and compute precision@k per query",
+        "Write up results + failure cases; Shane reviews conclusions"
+      ]},
+      {t:"🎓 Implement conflict reconciliation: match live vs. private results by SKU/brand/title similarity (cross-training, mentor: Victoria)", p:"fin", s:[
+        "Walk through the planner/answerer flow with Victoria to see where reconciliation sits",
+        "Implement matching: exact SKU, then brand match, then fuzzy title similarity (e.g., rapidfuzz)",
+        "Flag discrepancies (price differs, out of stock) with both sources attached",
+        "Add unit tests with tricky cases (same product different sizes); Victoria reviews"
+      ]},
+      {t:"Log all tool requests/responses with timestamp + source URL (no secrets in logs)", p:"fin", s:[
+        "Add structured logging middleware to both MCP tools (JSON lines)",
+        "Log timestamp, tool name, request params, response summary, source URLs, latency",
+        "Add a redaction filter so API keys and env values never reach logs",
+        "Write logs to a file the UI/step-log can also read"
+      ]},
+      {t:"Safety layer: domain allowlist, robots.txt/ToS compliance, block unsafe chemical advice", p:"fin", s:[
+        "Build a domain allowlist for web results (major retailers/review sites)",
+        "Check robots.txt/ToS for any pages actually fetched; drop disallowed sources",
+        "Add a keyword/intent check to refuse unsafe chemical-mixing advice (e.g., bleach + ammonia)",
+        "Document all safety decisions in docs/safety.md (graded item)"
+      ]},
+      {t:"Integration-test both MCP tools end-to-end; write build/run scripts for the MCP server", p:"fin", s:[
+        "Write an integration test calling both tools through the real MCP transport",
+        "Test cache hits, rate-limit behavior, and error paths",
+        "Add run scripts (make/shell) to start the server + rebuild everything",
+        "Run the full graph→MCP→response path with Victoria before the demo"
+      ]},
+      {t:"Presentation: MCP layer & live-comparison section", p:"fin", s:[
+        "Prepare 1–2 slides: MCP architecture, the two tool schemas, caching/logging",
+        "Show one live private-vs-web price comparison with a flagged discrepancy",
+        "Rehearse to fit your ~1.5-minute share of the 7-minute demo"
+      ]}
+    ]
+  },
+  {
+    id:"victoria", name:"Victoria", color:"var(--victoria)",
+    role:"LangGraph Orchestration & Planning",
+    pts:"Why: Solution Consulting @ WWT — solution architecture design & POCs; material covered directly in Weeks 6–8 · Covers: Functionality (28) core · Planning & Tool Use (10)",
+    tasks:[
+      {t:"Write one-page proposal: problem, data slice, tools + brief related work (with team input)", p:"cp1", s:[
+        "Collect inputs: Shane's data slice choice, Clark's tool/API picks, Alison's UI concept",
+        "Draft sections: problem statement, dataset, architecture sketch, tool list",
+        "Add 3–4 related-work references (agentic RAG, voice assistants, MCP)",
+        "Circulate for team review and submit before the Week 6 deadline (~Jul 17)"
+      ]},
+      {t:"Build Planner node: source selection rules (rag.search first; web.search for price/availability/latest), fields & comparison criteria", p:"cp2", s:[
+        "Write the planner prompt: given intent + constraints, decide which tools to call",
+        "Encode the rules: prefer rag.search for facts; add web.search when query mentions current price/availability/now/latest",
+        "Output a structured plan: tools, fields to retrieve, comparison criteria",
+        "Test with 10 varied queries; log the emitted plans for the step log"
+      ]},
+      {t:"Draw architecture diagram: graph nodes + MCP calls (Checkpoint 2 deliverable)", p:"cp2", s:[
+        "Sketch the flow: mic → ASR → Router → Planner → Retriever/MCP tools → Answerer/Critic → TTS + UI",
+        "Show both MCP tools and where citations/logging attach",
+        "Make it clean in draw.io/Excalidraw/Figma (ask Alison for polish)",
+        "Export to the repo and Drive for CP2 (~Jul 31)"
+      ]},
+      {t:"Demo dry-run: verify agent step log and citations render correctly", p:"fin", s:[
+        "Run the 2 demo scenarios and watch the step-log panel populate node by node",
+        "Verify every recommendation shows its private doc_id and live-link citations",
+        "Check reconciliation flags appear when private and web prices differ",
+        "File any rendering bugs with Alison/Shane and retest after fixes"
+      ]},
+      {t:"Build Answerer/Critic node: concise cited recommendation, grounding & safety enforcement", p:"fin", s:[
+        "Write the answerer prompt: synthesize top-3 recommendation with citations to doc_ids/URLs",
+        "Add the critic pass: verify every claim is grounded in retrieved snippets; reject/retry if not",
+        "Enforce the ≤15-second spoken-summary length for the TTS handoff",
+        "Test with conflicting sources to confirm discrepancies are surfaced, not hidden"
+      ]},
+      {t:"Wire full LangGraph state graph; log plans, tool I/O, and citations at every step", p:"fin", s:[
+        "Define the shared state schema (transcript, intent, constraints, plan, results, answer, citations)",
+        "Connect nodes with conditional edges (e.g., safety flag → refusal path)",
+        "Emit a structured log event from every node for the step-log panel",
+        "Run end-to-end from a text query before voice is integrated"
+      ]},
+      {t:"🎓 Add rate limiting + response cache (TTL 60–300s) for web.search (cross-training, mentor: Clark)", p:"fin", s:[
+        "Pair with Clark on caching strategy (30-min session: TTL choice, key design)",
+        "Implement an in-memory TTL cache keyed on normalized query",
+        "Add rate limiting (token bucket or simple per-minute cap) around the search API",
+        "Test: repeated queries hit cache; burst queries get throttled gracefully; Clark reviews"
+      ]},
+      {t:"🎓 Integrate TTS (OpenAI TTS / ElevenLabs / Polly): synthesize ≤15-second spoken summary (cross-training, mentor: Alison)", p:"fin", s:[
+        "Pick a TTS provider with Alison and get the API key into .env",
+        "Write a synthesize(text) → WAV/MP3 function (fragment-based, not streaming)",
+        "Trim/validate the answer summary to ≤15 seconds of speech",
+        "Hand the audio file to the UI's playback; Alison reviews voice quality"
+      ]},
+      {t:"End-to-end integration testing of the full voice → graph → tools → voice pipeline with the team", p:"fin", s:[
+        "Define 5+ test scenarios including the syllabus example (eco-friendly steel cleaner under $15)",
+        "Run full voice-in → voice-out passes with everyone's components connected",
+        "Log failures, assign fixes to component owners, retest",
+        "Sign off on a stable demo build 3+ days before Aug 14"
+      ]},
+      {t:"Write main README with setup instructions and run scripts", p:"fin", s:[
+        "Write setup: clone, install, .env config, index build, MCP server start, UI launch",
+        "Include the architecture diagram and a quickstart demo query",
+        "Verify instructions on a clean machine (fresh venv)",
+        "Cross-link the MCP README, prompts/ folder, and docs"
+      ]},
+      {t:"Presentation: architecture & orchestration walkthrough section", p:"fin", s:[
+        "Prepare 1–2 slides: graph design, planner rules, reconciliation flow",
+        "Show a real logged plan → tool calls → cited answer trace",
+        "Rehearse to fit your ~1.5-minute share of the 7-minute demo"
+      ]}
+    ]
+  },
+  {
+    id:"alison", name:"Alison", color:"var(--alison)",
+    role:"Voice (ASR/TTS), UI & Demo Lead",
+    pts:"Why: Experience Design, MDes @ IIT Institute of Design — UX is her profession; owns wireframe, interface & demo polish · Covers: UI/UX (10) · voice portion of Functionality · Presentation (10) lead",
+    tasks:[
+      {t:"Prototype Whisper ASR: fragment-based recording (WAV/MP3) → accurate transcript", p:"cp1", s:[
+        "Install openai-whisper (or use the API); pick a model size that runs on your machine",
+        "Record short WAV clips of sample product queries",
+        "Transcribe and check accuracy on product/brand terms and prices",
+        "Wrap it in a transcribe(audio_file) → text function for the pipeline"
+      ]},
+      {t:"Design UI wireframe: mic capture, transcript, agent log, comparison table (Checkpoint 2 deliverable)", p:"cp2", s:[
+        "Sketch the layout: mic button, live transcript, agent step log, top-3 comparison table, Play TTS",
+        "Design the citation/data-lineage display (private doc IDs vs. live links)",
+        "Mock it in Figma; get team feedback",
+        "Export for CP2 (~Jul 31)"
+      ]},
+      {t:"Build Streamlit app shell: mic record/upload → send audio to ASR → show live transcript", p:"cp2", s:[
+        "Scaffold the Streamlit app matching your wireframe",
+        "Add audio input (st.audio_input or file upload) wired to the Whisper function",
+        "Display the transcript and a processing status indicator",
+        "Stub the downstream panels (log, table, TTS) for later integration"
+      ]},
+      {t:"🎓 Build Router node: intent classifier extracting task + constraints (budget, material, brand) + safety flags (cross-training, mentor: Victoria)", p:"cp2", s:[
+        "Pair with Victoria on LangGraph basics: nodes, state, edges (30-min session)",
+        "Write the router prompt: extract task type, budget, material, brand + safety flags into structured JSON",
+        "Handle messy spoken input ('under fifteen dollars' → 15.0)",
+        "Test on 10 sample transcripts; Victoria reviews outputs and edge cases"
+      ]},
+      {t:"🎓 Extract review snippets → reviews.parquet; normalize units (price per oz) (cross-training, mentor: Shane)", p:"cp2", s:[
+        "Pair with Shane on the dataset structure and pandas basics (30-min session)",
+        "Extract top review snippets per product (by helpfulness/stars) into reviews.parquet",
+        "Parse sizes from titles/features and compute normalized price-per-oz",
+        "Spot-check 20 products for correctness; Shane reviews the notebook"
+      ]},
+      {t:"Test ASR with varied accents; return timestamps if available", p:"fin", s:[
+        "Collect test clips from all 4 teammates + non-native accent samples",
+        "Measure word error rate on product terms across speakers",
+        "Enable word/segment timestamps in the Whisper output",
+        "Document accuracy findings and any model-size change needed"
+      ]},
+      {t:"Add Play TTS button with fragment-based audio playback", p:"fin", s:[
+        "Wire Victoria's synthesize() output into the UI",
+        "Add a Play button using st.audio with the generated file",
+        "Show the spoken summary text alongside, aligned with on-screen citations",
+        "Handle the no-audio-yet state gracefully"
+      ]},
+      {t:"Build comparison table with price, rating, ingredients + citations (private doc IDs + live links)", p:"fin", s:[
+        "Render the top-3 products with price, rating, ingredients, price-per-oz",
+        "Attach citations per row: private doc_id badges + clickable live URLs",
+        "Highlight the top pick and any flagged discrepancies",
+        "Make it readable at demo/projector scale"
+      ]},
+      {t:"Polish UI: data lineage display, error states, hands-free flow", p:"fin", s:[
+        "Add clear lineage: which facts came from the private catalog vs. live web",
+        "Design error states: ASR failure, no results, tool timeout",
+        "Tighten the hands-free loop: record → answer → follow-up prompt",
+        "Do a usability pass with a teammate as test user"
+      ]},
+      {t:"Script & rehearse the ≤7-min live demo; record backup demo video", p:"fin", s:[
+        "Write the demo script around 2 strong voice queries (include the syllabus example)",
+        "Assign speaking order and timings across all four members",
+        "Record a full backup video in case live audio fails",
+        "Run 2 timed rehearsals; trim until reliably under 7 minutes"
+      ]},
+      {t:"Presentation: assemble slides; demo, results & limitations section", p:"fin", s:[
+        "Assemble everyone's slides into one deck with a consistent visual style",
+        "Add results, limitations, and lessons-learned slides",
+        "Prepare the demo transition (deck → live app → deck)",
+        "Final run-through with the whole team before Aug 14"
+      ]}
+    ]
+  }
+];
+
+const DB="https://genai-ii-final-project-default-rtdb.firebaseio.com/tracker";
+let state={};
+const expanded=new Set();
+function setSync(ok){
+  const el=document.getElementById("syncStatus");
+  if(!el) return;
+  el.textContent=ok?"● live":"● offline";
+  el.style.color=ok?"var(--done)":"#ff7070";
+}
+const tagLabel={cp1:"CP1 · Jul 17",cp2:"CP2 · Jul 31",fin:"Final · Aug 14"};
+
+function render(){
+  const grid=document.getElementById("grid");
+  grid.innerHTML="";
+  MEMBERS.forEach(m=>{
+    const card=document.createElement("div");
+    card.className="member";
+    const countable=m.tasks.filter(t=>!t.mentorOnly);
+    const doneN=countable.filter(t=>state[m.id+"-"+m.tasks.indexOf(t)]).length;
+    const pct=Math.round(100*doneN/countable.length);
+    card.innerHTML=`
+      <div class="member-head">
+        <h2><span class="dot" style="background:${m.color}"></span>${m.name}</h2>
+        <div class="role">${m.role}</div>
+        <div class="pts">${m.pts}</div>
+      </div>
+      <div class="bar-label"><span>${doneN}/${countable.length} done</span><span>${pct}%</span></div>
+      <div class="bar"><div style="width:${pct}%; background:${m.color}"></div></div>
+      <div class="tasks">
+        ${m.tasks.filter(t=>!t.mentorOnly).map(task=>{
+          const i=m.tasks.indexOf(task);
+          const id=m.id+"-"+i, checked=!!state[id], open=expanded.has(id);
+          return `<div class="task ${checked?"done":""} ${open?"open":""}" onclick="toggleSteps('${id}')">
+            <input type="checkbox" ${checked?"checked":""} onclick="event.stopPropagation()" onchange="toggle('${id}')">
+            <span class="txt">${task.t}<span class="tag ${task.p}">${tagLabel[task.p]}</span></span>
+            <span class="chev">▶</span>
+          </div>
+          <ol class="steps ${open?"show":""}" id="steps-${id}">
+            ${task.s.map(step=>`<li>${step}</li>`).join("")}
+          </ol>`;
+        }).join("")}
+      </div>`;
+    grid.appendChild(card);
+  });
+  const total=MEMBERS.reduce((a,m)=>a+m.tasks.filter(t=>!t.mentorOnly).length,0);
+  const done=Object.values(state).filter(Boolean).length;
+  const pct=total?Math.round(100*done/total):0;
+  document.getElementById("overallBar").style.width=pct+"%";
+  document.getElementById("overallPct").textContent=pct+"%";
+  document.getElementById("doneCount").textContent=done+"/"+total;
+}
+function toggle(id){
+  state[id]=!state[id]; render();
+  fetch(DB+".json",{method:"PATCH",body:JSON.stringify({[id]:state[id]})})
+    .then(r=>setSync(r.ok)).catch(()=>setSync(false));
+}
+function toggleSteps(id){expanded.has(id)?expanded.delete(id):expanded.add(id); render();}
+function resetAll(){
+  if(confirm("Clear ALL checkmarks for the WHOLE TEAM?")){
+    state={}; render();
+    fetch(DB+".json",{method:"DELETE"}).then(r=>setSync(r.ok)).catch(()=>setSync(false));
+  }
+}
+async function loadState(){
+  try{
+    const r=await fetch(DB+".json");
+    state=(await r.json())||{};
+    setSync(true);
+  }catch(e){ setSync(false); }
+  render();
+}
+function subscribe(){
+  const es=new EventSource(DB+".json");
+  es.addEventListener("put",e=>{
+    const {path,data}=JSON.parse(e.data);
+    if(path==="/"){ state=data||{}; }
+    else{ const k=path.replace(/^\//,""); if(data===null) delete state[k]; else state[k]=data; }
+    setSync(true); render();
+  });
+  es.addEventListener("patch",e=>{
+    const {data}=JSON.parse(e.data);
+    Object.assign(state,data||{});
+    setSync(true); render();
+  });
+  es.onerror=()=>setSync(false);
+}
+(function(){
+  const due=new Date("2026-08-14T23:59:59");
+  const days=Math.max(0,Math.ceil((due-new Date())/86400000));
+  document.getElementById("countdown").textContent=days;
+})();
+render();
+loadState();
+subscribe();
+</script>
+</body>
+</html>
