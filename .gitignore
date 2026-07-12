@@ -1,0 +1,29 @@
+# Secrets — never commit
+.env
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# Data & indexes (too large for git — keep in Drive)
+data/raw/
+data/*.parquet
+data/index/
+*.faiss
+chroma_db/
+
+# Logs & caches
+logs/
+*.log
+.cache/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
