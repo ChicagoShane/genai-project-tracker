@@ -52,6 +52,20 @@
   .steps li::marker{color:var(--accent);}
   .member .bar{margin:0 18px;}
   .member .bar-label{padding:10px 18px 4px;}
+  .flow{background:var(--card); border:1px solid #2e3560; border-radius:14px; padding:20px 22px; margin-bottom:26px;}
+  .flow h2{font-size:1.15rem; margin-bottom:6px;}
+  .flow-intro{color:var(--muted); font-size:.85rem; margin-bottom:16px;}
+  .legend{display:flex; gap:16px; flex-wrap:wrap; font-size:.78rem; color:var(--muted); margin-bottom:16px;}
+  .legend span{display:inline-flex; align-items:center; gap:6px;}
+  .phase{background:#0d1020; border:1px solid #2e3560; border-radius:10px; padding:14px 16px;}
+  .phase-head{font-weight:700; font-size:.95rem; margin-bottom:10px; display:flex; align-items:center; gap:10px;}
+  .phase-num{background:var(--accent); color:#fff; width:24px; height:24px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:.8rem; flex-shrink:0;}
+  .phase-when{color:var(--muted); font-weight:400; font-size:.8rem;}
+  .fitem{display:flex; align-items:flex-start; gap:8px; font-size:.84rem; line-height:1.5; padding:3px 0;}
+  .fdot{width:10px; height:10px; border-radius:50%; margin-top:5px; flex-shrink:0;}
+  .fitem em{color:var(--muted); font-style:normal; font-size:.78rem;}
+  .fitem em::before{content:"→ "; color:var(--accent);}
+  .phase-arrow{text-align:center; color:var(--accent); font-size:1.2rem; padding:6px 0;}
   footer{text-align:center; color:var(--muted); font-size:.8rem; margin-top:28px;}
   .reset{background:none; border:1px solid #2e3560; color:var(--muted); padding:6px 14px; border-radius:8px; cursor:pointer; font-size:.78rem; margin-top:8px;}
   .reset:hover{color:var(--text);}
@@ -79,6 +93,60 @@
   <div class="ms"><b>Checkpoint 1 — Week 6 (~Jul 17)</b><span>One-page proposal · ingestion notebook · related work</span></div>
   <div class="ms"><b>Checkpoint 2 — Week 8 (~Jul 31)</b><span>Architecture diagram · UI wireframe · RAG eval plan · MCP README</span></div>
   <div class="ms"><b>Final — Aug 14</b><span>Live demo (≤7 min) · repo + README · presentation · prompts/ folder</span></div>
+</div>
+
+<div class="flow">
+  <h2>🗺️ How it all fits together — build order &amp; dependencies</h2>
+  <div class="flow-intro">The pipeline is: <b>voice in → ASR → Router → Planner → MCP tools (rag.search + web.search) → Answerer/Critic → TTS + UI</b>. Work flows top to bottom below — each item shows who owns it and what it unlocks, so nobody is blocked waiting on a dependency.</div>
+  <div class="legend">
+    <span><span class="fdot" style="background:var(--shane)"></span>Shane</span>
+    <span><span class="fdot" style="background:var(--clark)"></span>Clark</span>
+    <span><span class="fdot" style="background:var(--victoria)"></span>Victoria</span>
+    <span><span class="fdot" style="background:var(--alison)"></span>Alison</span>
+    <span>🎓 = cross-training task</span>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head"><span class="phase-num">1</span> Foundations <span class="phase-when">— now → Jul 17 (Checkpoint 1)</span></div>
+    <div class="fitem"><span class="fdot" style="background:var(--clark)"></span><span><b>Clark:</b> Repo + .env.example + swappable LLM config <em>unlocks everyone's coding — do this first</em></span></div>
+    <div class="fitem"><span class="fdot" style="background:var(--shane)"></span><span><b>Shane:</b> Dataset slice + ingestion notebook (📄 CP1 deliverable) <em>unlocks the embedding index and Alison's review snippets</em></span></div>
+    <div class="fitem"><span class="fdot" style="background:var(--clark)"></span><span><b>Clark:</b> Web-search API choice + key <em>unlocks the web.search tool</em></span></div>
+    <div class="fitem"><span class="fdot" style="background:var(--alison)"></span><span><b>Alison:</b> Whisper ASR prototype <em>unlocks the Streamlit shell and the whole voice pipeline</em></span></div>
+    <div class="fitem"><span class="fdot" style="background:var(--victoria)"></span><span><b>Victoria:</b> One-page proposal (📄 CP1 deliverable) <em>needs inputs from all three items above — collect them early</em></span></div>
+  </div>
+  <div class="phase-arrow">▼</div>
+
+  <div class="phase">
+    <div class="phase-head"><span class="phase-num">2</span> Core components <span class="phase-when">— Jul 18 → Jul 31 (Checkpoint 2)</span></div>
+    <div class="fitem"><span class="fdot" style="background:var(--shane)"></span><span><b>Shane:</b> Embedding index in FAISS/Chroma <em>needs the notebook; unlocks hybrid retrieval and rag.search</em></span></div>
+    <div class="fitem"><span class="fdot" style="background:var(--alison)"></span><span><b>Alison 🎓:</b> Review snippets + price-per-oz normalization <em>needs the notebook; feeds the index and the comparison table</em></span></div>
+    <div class="fitem"><span class="fdot" style="background:var(--clark)"></span><span><b>Clark:</b> MCP server scaffold + tool schemas <em>unlocks both tools and Shane's rag.search</em></span></div>
+    <div class="fitem"><span class="fdot" style="background:var(--alison)"></span><span><b>Alison 🎓:</b> Router node &nbsp;+&nbsp; <span class="fdot" style="background:var(--victoria); display:inline-block"></span> <b>Victoria:</b> Planner node <em>unlock the graph wiring in Phase 3</em></span></div>
+    <div class="fitem"><span class="fdot" style="background:var(--alison)"></span><span><b>Alison:</b> UI wireframe → Streamlit shell with mic + transcript <em>needs the ASR prototype</em></span></div>
+    <div class="fitem"><span class="fdot" style="background:var(--victoria)"></span><span><b>📄 CP2 paper deliverables:</b> Victoria's architecture diagram · Shane's RAG eval plan · Clark's MCP README · Alison's wireframe</span></div>
+  </div>
+  <div class="phase-arrow">▼</div>
+
+  <div class="phase">
+    <div class="phase-head"><span class="phase-num">3</span> Integration <span class="phase-when">— Aug 1 → Aug 8</span></div>
+    <div class="fitem"><span class="fdot" style="background:var(--clark)"></span><span><b>Clark:</b> web.search tool &nbsp;+&nbsp; <span class="fdot" style="background:var(--victoria); display:inline-block"></span> <b>Victoria 🎓:</b> caching + rate limits <em>need the scaffold and API key</em></span></div>
+    <div class="fitem"><span class="fdot" style="background:var(--shane)"></span><span><b>Shane:</b> Hybrid retrieval + reranker → then <b>🎓 rag.search MCP tool</b> <em>needs the index and Clark's scaffold</em></span></div>
+    <div class="fitem"><span class="fdot" style="background:var(--victoria)"></span><span><b>Victoria:</b> Answerer/Critic node + wire the full LangGraph <em>needs Router, Planner, and both MCP tools working</em></span></div>
+    <div class="fitem"><span class="fdot" style="background:var(--clark)"></span><span><b>Clark 🎓:</b> Conflict reconciliation <em>needs both tools returning real results to compare</em></span></div>
+    <div class="fitem"><span class="fdot" style="background:var(--clark)"></span><span><b>Clark:</b> Logging + safety layer <em>feeds the step log and the graded safety notes</em></span></div>
+    <div class="fitem"><span class="fdot" style="background:var(--victoria)"></span><span><b>Victoria 🎓:</b> TTS synthesis → <span class="fdot" style="background:var(--alison); display:inline-block"></span> <b>Alison:</b> Play button + comparison table <em>completes the voice-out half</em></span></div>
+    <div class="fitem"><span class="fdot" style="background:var(--shane)"></span><span><b>Shane 🎓:</b> Agent step log panel <em>needs the graph emitting log events</em></span></div>
+  </div>
+  <div class="phase-arrow">▼</div>
+
+  <div class="phase">
+    <div class="phase-head"><span class="phase-num">4</span> Hardening &amp; demo <span class="phase-when">— Aug 9 → Aug 14 (Final)</span></div>
+    <div class="fitem"><span class="fdot" style="background:var(--victoria)"></span><span><b>Victoria:</b> End-to-end testing → everyone fixes their components → demo dry-run <em>freeze a stable build 3+ days before Aug 14</em></span></div>
+    <div class="fitem"><span class="fdot" style="background:var(--clark)"></span><span><b>Clark 🎓:</b> Retrieval evaluation results <em>with</em> <span class="fdot" style="background:var(--shane); display:inline-block"></span> <b>Shane's</b> eval plan <em>graded RAG-quality evidence for the presentation</em></span></div>
+    <div class="fitem"><span class="fdot" style="background:var(--shane)"></span><span><b>📄 Final docs:</b> Shane's prompts/ folder + build script · Victoria's main README · Clark's MCP run scripts</span></div>
+    <div class="fitem"><span class="fdot" style="background:var(--alison)"></span><span><b>Alison:</b> UI polish + accent testing → demo script + backup video <em>protects the 25%-weight live demo</em></span></div>
+    <div class="fitem"><span class="fdot" style="background:var(--alison)"></span><span><b>All:</b> Presentation sections (~1.5 min each) → Alison assembles the deck → 2 timed rehearsals under 7 minutes</span></div>
+  </div>
 </div>
 
 <div class="grid" id="grid"></div>
@@ -312,170 +380,4 @@ const MEMBERS = [
     role:"Voice (ASR/TTS), UI & Demo Lead",
     pts:"Why: Experience Design, MDes @ IIT Institute of Design — UX is her profession; owns wireframe, interface & demo polish · Covers: UI/UX (10) · voice portion of Functionality · Presentation (10) lead",
     tasks:[
-      {t:"Prototype Whisper ASR: fragment-based recording (WAV/MP3) → accurate transcript", p:"cp1", s:[
-        "Install openai-whisper (or use the API); pick a model size that runs on your machine",
-        "Record short WAV clips of sample product queries",
-        "Transcribe and check accuracy on product/brand terms and prices",
-        "Wrap it in a transcribe(audio_file) → text function for the pipeline"
-      ]},
-      {t:"Design UI wireframe: mic capture, transcript, agent log, comparison table (Checkpoint 2 deliverable)", p:"cp2", s:[
-        "Sketch the layout: mic button, live transcript, agent step log, top-3 comparison table, Play TTS",
-        "Design the citation/data-lineage display (private doc IDs vs. live links)",
-        "Mock it in Figma; get team feedback",
-        "Export for CP2 (~Jul 31)"
-      ]},
-      {t:"Build Streamlit app shell: mic record/upload → send audio to ASR → show live transcript", p:"cp2", s:[
-        "Scaffold the Streamlit app matching your wireframe",
-        "Add audio input (st.audio_input or file upload) wired to the Whisper function",
-        "Display the transcript and a processing status indicator",
-        "Stub the downstream panels (log, table, TTS) for later integration"
-      ]},
-      {t:"🎓 Build Router node: intent classifier extracting task + constraints (budget, material, brand) + safety flags (cross-training, mentor: Victoria)", p:"cp2", s:[
-        "Pair with Victoria on LangGraph basics: nodes, state, edges (30-min session)",
-        "Write the router prompt: extract task type, budget, material, brand + safety flags into structured JSON",
-        "Handle messy spoken input ('under fifteen dollars' → 15.0)",
-        "Test on 10 sample transcripts; Victoria reviews outputs and edge cases"
-      ]},
-      {t:"🎓 Extract review snippets → reviews.parquet; normalize units (price per oz) (cross-training, mentor: Shane)", p:"cp2", s:[
-        "Pair with Shane on the dataset structure and pandas basics (30-min session)",
-        "Extract top review snippets per product (by helpfulness/stars) into reviews.parquet",
-        "Parse sizes from titles/features and compute normalized price-per-oz",
-        "Spot-check 20 products for correctness; Shane reviews the notebook"
-      ]},
-      {t:"Test ASR with varied accents; return timestamps if available", p:"fin", s:[
-        "Collect test clips from all 4 teammates + non-native accent samples",
-        "Measure word error rate on product terms across speakers",
-        "Enable word/segment timestamps in the Whisper output",
-        "Document accuracy findings and any model-size change needed"
-      ]},
-      {t:"Add Play TTS button with fragment-based audio playback", p:"fin", s:[
-        "Wire Victoria's synthesize() output into the UI",
-        "Add a Play button using st.audio with the generated file",
-        "Show the spoken summary text alongside, aligned with on-screen citations",
-        "Handle the no-audio-yet state gracefully"
-      ]},
-      {t:"Build comparison table with price, rating, ingredients + citations (private doc IDs + live links)", p:"fin", s:[
-        "Render the top-3 products with price, rating, ingredients, price-per-oz",
-        "Attach citations per row: private doc_id badges + clickable live URLs",
-        "Highlight the top pick and any flagged discrepancies",
-        "Make it readable at demo/projector scale"
-      ]},
-      {t:"Polish UI: data lineage display, error states, hands-free flow", p:"fin", s:[
-        "Add clear lineage: which facts came from the private catalog vs. live web",
-        "Design error states: ASR failure, no results, tool timeout",
-        "Tighten the hands-free loop: record → answer → follow-up prompt",
-        "Do a usability pass with a teammate as test user"
-      ]},
-      {t:"Script & rehearse the ≤7-min live demo; record backup demo video", p:"fin", s:[
-        "Write the demo script around 2 strong voice queries (include the syllabus example)",
-        "Assign speaking order and timings across all four members",
-        "Record a full backup video in case live audio fails",
-        "Run 2 timed rehearsals; trim until reliably under 7 minutes"
-      ]},
-      {t:"Presentation: assemble slides; demo, results & limitations section", p:"fin", s:[
-        "Assemble everyone's slides into one deck with a consistent visual style",
-        "Add results, limitations, and lessons-learned slides",
-        "Prepare the demo transition (deck → live app → deck)",
-        "Final run-through with the whole team before Aug 14"
-      ]}
-    ]
-  }
-];
-
-const DB="https://genai-ii-final-project-default-rtdb.firebaseio.com/tracker";
-let state={};
-const expanded=new Set();
-function setSync(ok){
-  const el=document.getElementById("syncStatus");
-  if(!el) return;
-  el.textContent=ok?"● live":"● offline";
-  el.style.color=ok?"var(--done)":"#ff7070";
-}
-const tagLabel={cp1:"CP1 · Jul 17",cp2:"CP2 · Jul 31",fin:"Final · Aug 14"};
-
-function render(){
-  const grid=document.getElementById("grid");
-  grid.innerHTML="";
-  MEMBERS.forEach(m=>{
-    const card=document.createElement("div");
-    card.className="member";
-    const countable=m.tasks.filter(t=>!t.mentorOnly);
-    const doneN=countable.filter(t=>state[m.id+"-"+m.tasks.indexOf(t)]).length;
-    const pct=Math.round(100*doneN/countable.length);
-    card.innerHTML=`
-      <div class="member-head">
-        <h2><span class="dot" style="background:${m.color}"></span>${m.name}</h2>
-        <div class="role">${m.role}</div>
-        <div class="pts">${m.pts}</div>
-      </div>
-      <div class="bar-label"><span>${doneN}/${countable.length} done</span><span>${pct}%</span></div>
-      <div class="bar"><div style="width:${pct}%; background:${m.color}"></div></div>
-      <div class="tasks">
-        ${m.tasks.filter(t=>!t.mentorOnly).map(task=>{
-          const i=m.tasks.indexOf(task);
-          const id=m.id+"-"+i, checked=!!state[id], open=expanded.has(id);
-          return `<div class="task ${checked?"done":""} ${open?"open":""}" onclick="toggleSteps('${id}')">
-            <input type="checkbox" ${checked?"checked":""} onclick="event.stopPropagation()" onchange="toggle('${id}')">
-            <span class="txt">${task.t}<span class="tag ${task.p}">${tagLabel[task.p]}</span></span>
-            <span class="chev">▶</span>
-          </div>
-          <ol class="steps ${open?"show":""}" id="steps-${id}">
-            ${task.s.map(step=>`<li>${step}</li>`).join("")}
-          </ol>`;
-        }).join("")}
-      </div>`;
-    grid.appendChild(card);
-  });
-  const total=MEMBERS.reduce((a,m)=>a+m.tasks.filter(t=>!t.mentorOnly).length,0);
-  const done=Object.values(state).filter(Boolean).length;
-  const pct=total?Math.round(100*done/total):0;
-  document.getElementById("overallBar").style.width=pct+"%";
-  document.getElementById("overallPct").textContent=pct+"%";
-  document.getElementById("doneCount").textContent=done+"/"+total;
-}
-function toggle(id){
-  state[id]=!state[id]; render();
-  fetch(DB+".json",{method:"PATCH",body:JSON.stringify({[id]:state[id]})})
-    .then(r=>setSync(r.ok)).catch(()=>setSync(false));
-}
-function toggleSteps(id){expanded.has(id)?expanded.delete(id):expanded.add(id); render();}
-function resetAll(){
-  if(confirm("Clear ALL checkmarks for the WHOLE TEAM?")){
-    state={}; render();
-    fetch(DB+".json",{method:"DELETE"}).then(r=>setSync(r.ok)).catch(()=>setSync(false));
-  }
-}
-async function loadState(){
-  try{
-    const r=await fetch(DB+".json");
-    state=(await r.json())||{};
-    setSync(true);
-  }catch(e){ setSync(false); }
-  render();
-}
-function subscribe(){
-  const es=new EventSource(DB+".json");
-  es.addEventListener("put",e=>{
-    const {path,data}=JSON.parse(e.data);
-    if(path==="/"){ state=data||{}; }
-    else{ const k=path.replace(/^\//,""); if(data===null) delete state[k]; else state[k]=data; }
-    setSync(true); render();
-  });
-  es.addEventListener("patch",e=>{
-    const {data}=JSON.parse(e.data);
-    Object.assign(state,data||{});
-    setSync(true); render();
-  });
-  es.onerror=()=>setSync(false);
-}
-(function(){
-  const due=new Date("2026-08-14T23:59:59");
-  const days=Math.max(0,Math.ceil((due-new Date())/86400000));
-  document.getElementById("countdown").textContent=days;
-})();
-render();
-loadState();
-subscribe();
-</script>
-</body>
-</html>
+      {t:"Prototype Whisper ASR: fragment-based recording (WAV/MP3) 
